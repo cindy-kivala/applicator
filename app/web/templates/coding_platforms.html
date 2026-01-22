@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}Coding Platforms - Job Application Automation{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Coding Platforms</h1>
+    <p class="text-gray-600">Track your coding progress and prepare for technical interviews</p>
+</div>
+
+<!-- Platform Connection Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- LeetCode -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-orange-500">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-100 rounded-lg p-2">
+                    <i class="fas fa-code text-orange-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900">LeetCode</h3>
+            </div>
+            {% if platforms and platforms.leetcode %}
+            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                Connected
+            </span>
+            {% else %}
+            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Connect</button>
+            {% endif %}
+        </div>
+        {% if platforms and platforms.leetcode %}
+        <div class="space-y-2">
+            <p class="text-2xl font-bold text-gray-900">{{ platforms.leetcode.solved if platforms.leetcode else 0 }}</p>
+            <p class="text-sm text-gray-600">Problems Solved</p>
+            <div class="grid grid-cols-3 gap-2 mt-3">
+                <div class="text-center">
+                    <p class="text-lg font-semibold text-green-600">{{ platforms.leetcode.easy if platforms.leetcode else 0 }}</p>
+                    <p class="text-xs text-gray-500">Easy</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-lg font-semibold text-yellow-600">{{ platforms.leetcode.medium if platforms.leetcode else 0 }}</p>
+                    <p class="text-xs text-gray-500">Medium</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-lg font-semibold text-red-600">{{ platforms.leetcode.hard if platforms.leetcode else 0 }}</p>
+                    <p class="text-xs text-gray-500">Hard</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">Connect to track your progress</p>
+        {% endif %}
+    </div>
+
+    <!-- HackerRank -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-green-100 rounded-lg p-2">
+                    <i class="fas fa-star text-green-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900">HackerRank</h3>
+            </div>
+            {% if platforms and platforms.hackerrank %}
+            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                Connected
+            </span>
+            {% else %}
+            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Connect</button>
+            {% endif %}
+        </div>
+        {% if platforms and platforms.hackerrank %}
+        <div class="space-y-2">
+            <div class="flex items-center gap-1 mb-2">
+                {% for i in range(5) %}
+                <i class="fas fa-star {% if platforms.hackerrank.stars and i < platforms.hackerrank.stars %}text-yellow-400{% else %}text-gray-300{% endif %} text-lg"></i>
+                {% endfor %}
+            </div>
+            <p class="text-sm text-gray-600">{{ platforms.hackerrank.badges if platforms.hackerrank else 0 }} Badges Earned</p>
+            <p class="text-sm text-gray-600">Rank: {{ platforms.hackerrank.rank if platforms.hackerrank else 'N/A' }}</p>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">Connect to track your progress</p>
+        {% endif %}
+    </div>
+
+    <!-- Codility -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-100 rounded-lg p-2">
+                    <i class="fas fa-certificate text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900">Codility</h3>
+            </div>
+            {% if platforms and platforms.codility %}
+            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                Connected
+            </span>
+            {% else %}
+            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Add</button>
+            {% endif %}
+        </div>
+        {% if platforms and platforms.codility %}
+        <div class="space-y-2">
+            <p class="text-2xl font-bold text-gray-900">{{ platforms.codility.score if platforms.codility else 0 }}%</p>
+            <p class="text-sm text-gray-600">Average Score</p>
+            <p class="text-sm text-gray-600">{{ platforms.codility.assessments if platforms.codility else 0 }} Assessments</p>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">Add your Codility progress manually</p>
+        {% endif %}
+    </div>
+
+    <!-- CodeSignal -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-purple-500">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-100 rounded-lg p-2">
+                    <i class="fas fa-award text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-900">CodeSignal</h3>
+            </div>
+            {% if platforms and platforms.codesignal %}
+            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                Connected
+            </span>
+            {% else %}
+            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">Connect</button>
+            {% endif %}
+        </div>
+        {% if platforms and platforms.codesignal %}
+        <div class="space-y-2">
+            <p class="text-2xl font-bold text-gray-900">{{ platforms.codesignal.gca_score if platforms.codesignal else 0 }}</p>
+            <p class="text-sm text-gray-600">GCA Score</p>
+            <p class="text-sm text-gray-600">Top {{ platforms.codesignal.percentile if platforms.codesignal else 0 }}%</p>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-500">Connect to track your progress</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Practice Recommendations -->
+<div class="bg-white rounded-lg shadow mb-6">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Recommended Practice
+        </h2>
+        <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            Refresh Recommendations
+        </button>
+    </div>
+    <div class="p-6">
+        {% if recommendations %}
+        <div class="space-y-4">
+            {% for rec in recommendations %}
+            <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 mb-2">{{ rec.title }}</h3>
+                        <p class="text-sm text-gray-600 mb-3">{{ rec.description }}</p>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">
+                                {{ rec.difficulty }}
+                            </span>
+                            <span class="px-2 py-1 bg-purple-50 text-purple-700 text-xs font-medium rounded">
+                                {{ rec.topic }}
+                            </span>
+                            <span class="text-xs text-gray-500">{{ rec.estimated_time }}</span>
+                        </div>
+                    </div>
+                    <button class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600">
+                        Practice
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-clipboard-list text-gray-300 text-5xl mb-4"></i>
+            <p class="text-gray-500 mb-4">No recommendations yet</p>
+            <p class="text-sm text-gray-600">Apply to some jobs to get personalized practice recommendations</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Progress Overview and Upcoming Assessments -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Weekly Progress -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-chart-line text-blue-500 mr-2"></i> This Week's Progress
+        </h2>
+        <div class="space-y-4">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Problems Solved</span>
+                    <span class="text-sm text-gray-600">12 / 20 goal</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-blue-500 h-3 rounded-full" style="width: 60%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Practice Time</span>
+                    <span class="text-sm text-gray-600">6.5 / 10 hours</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-green-500 h-3 rounded-full" style="width: 65%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Success Rate</span>
+                    <span class="text-sm text-gray-600">75%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-purple-500 h-3 rounded-full" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-3">Streak</h3>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-fire text-orange-500 text-2xl"></i>
+                <div>
+                    <p class="text-2xl font-bold text-gray-900">7 days</p>
+                    <p class="text-sm text-gray-600">Keep it up!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Assessments -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-calendar-check text-purple-500 mr-2"></i> Upcoming Assessments
+            </h2>
+            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                <i class="fas fa-plus mr-1"></i> Add
+            </button>
+        </div>
+        {% if assessments %}
+        <div class="space-y-4">
+            {% for assessment in assessments %}
+            <div class="border border-gray-200 rounded-lg p-4 {% if assessment.urgent %}border-red-300 bg-red-50{% endif %}">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900">{{ assessment.company }}</h3>
+                        <p class="text-sm text-gray-600">{{ assessment.position }}</p>
+                    </div>
+                    {% if assessment.urgent %}
+                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+                        Urgent
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="flex items-center gap-4 text-sm text-gray-600 mt-3">
+                    <span><i class="fas fa-laptop-code mr-1"></i> {{ assessment.platform }}</span>
+                    <span><i class="fas fa-clock mr-1"></i> {{ assessment.deadline }}</span>
+                </div>
+                <div class="mt-3 flex gap-2">
+                    <button class="flex-1 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600">
+                        Start Practice
+                    </button>
+                    <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Details
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-clipboard-check text-gray-300 text-5xl mb-4"></i>
+            <p class="text-gray-500 mb-2">No upcoming assessments</p>
+            <p class="text-sm text-gray-600">Assessments will appear here when scheduled</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Skills Breakdown -->
+<div class="bg-white rounded-lg shadow p-6 mt-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-6">
+        <i class="fas fa-chart-pie text-green-500 mr-2"></i> Skills Breakdown
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="text-center">
+            <div class="relative inline-block mb-3">
+                <svg class="w-24 h-24 transform -rotate-90">
+                    <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none" />
+                    <circle cx="48" cy="48" r="40" stroke="#3b82f6" stroke-width="8" fill="none"
+                        stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-xl font-bold text-gray-900">75%</span>
+                </div>
+            </div>
+            <p class="font-medium text-gray-900">Algorithms</p>
+            <p class="text-sm text-gray-500">60 problems</p>
+        </div>
+        <div class="text-center">
+            <div class="relative inline-block mb-3">
+                <svg class="w-24 h-24 transform -rotate-90">
+                    <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none" />
+                    <circle cx="48" cy="48" r="40" stroke="#10b981" stroke-width="8" fill="none"
+                        stroke-dasharray="251.2" stroke-dashoffset="87.92" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-xl font-bold text-gray-900">65%</span>
+                </div>
+            </div>
+            <p class="font-medium text-gray-900">Data Structures</p>
+            <p class="text-sm text-gray-500">45 problems</p>
+        </div>
+        <div class="text-center">
+            <div class="relative inline-block mb-3">
+                <svg class="w-24 h-24 transform -rotate-90">
+                    <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none" />
+                    <circle cx="48" cy="48" r="40" stroke="#f59e0b" stroke-width="8" fill="none"
+                        stroke-dasharray="251.2" stroke-dashoffset="125.6" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-xl font-bold text-gray-900">50%</span>
+                </div>
+            </div>
+            <p class="font-medium text-gray-900">System Design</p>
+            <p class="text-sm text-gray-500">12 problems</p>
+        </div>
+        <div class="text-center">
+            <div class="relative inline-block mb-3">
+                <svg class="w-24 h-24 transform -rotate-90">
+                    <circle cx="48" cy="48" r="40" stroke="#e5e7eb" stroke-width="8" fill="none" />
+                    <circle cx="48" cy="48" r="40" stroke="#8b5cf6" stroke-width="8" fill="none"
+                        stroke-dasharray="251.2" stroke-dashoffset="100.48" stroke-linecap="round" />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-xl font-bold text-gray-900">60%</span>
+                </div>
+            </div>
+            <p class="font-medium text-gray-900">SQL/Databases</p>
+            <p class="text-sm text-gray-500">30 problems</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

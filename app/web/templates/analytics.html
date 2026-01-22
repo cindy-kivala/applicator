@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Job Application Automation{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Analytics & Insights</h1>
+    <p class="text-gray-600">Track your job search performance and identify opportunities</p>
+</div>
+
+<!-- Time Period Filter -->
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="flex items-center justify-between">
+        <div class="flex gap-2">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium text-sm">7 Days</button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50">30 Days</button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50">90 Days</button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-50">All Time</button>
+        </div>
+        <button class="text-blue-600 hover:text-blue-800 font-medium">
+            <i class="fas fa-download mr-2"></i> Export Report
+        </button>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="bg-blue-100 rounded-lg p-3">
+                <i class="fas fa-paper-plane text-blue-600 text-xl"></i>
+            </div>
+            <span class="text-green-600 text-sm font-medium">+12%</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 mb-1">{{ metrics.total_applications if metrics else 0 }}</p>
+        <p class="text-sm text-gray-600">Total Applications</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="bg-green-100 rounded-lg p-3">
+                <i class="fas fa-reply text-green-600 text-xl"></i>
+            </div>
+            <span class="text-green-600 text-sm font-medium">+5%</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 mb-1">{{ metrics.response_rate if metrics else 0 }}%</p>
+        <p class="text-sm text-gray-600">Response Rate</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="bg-purple-100 rounded-lg p-3">
+                <i class="fas fa-calendar-check text-purple-600 text-xl"></i>
+            </div>
+            <span class="text-green-600 text-sm font-medium">+3</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 mb-1">{{ metrics.interviews if metrics else 0 }}</p>
+        <p class="text-sm text-gray-600">Interviews</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div class="bg-yellow-100 rounded-lg p-3">
+                <i class="fas fa-clock text-yellow-600 text-xl"></i>
+            </div>
+            <span class="text-gray-600 text-sm font-medium">avg</span>
+        </div>
+        <p class="text-2xl font-bold text-gray-900 mb-1">{{ metrics.avg_response_time if metrics else 0 }}</p>
+        <p class="text-sm text-gray-600">Days to Response</p>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Application Timeline -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Application Timeline</h2>
+        <canvas id="applicationTimelineChart" height="250"></canvas>
+    </div>
+
+    <!-- Success Funnel -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Success Funnel</h2>
+        <canvas id="successFunnelChart" height="250"></canvas>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Source Performance -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Performance by Source</h2>
+        <div class="space-y-4">
+            {% if source_performance %}
+                {% for source in source_performance %}
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">{{ source.name }}</span>
+                        <span class="text-sm text-gray-600">{{ source.applications }} applications</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ source.success_rate }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">{{ source.success_rate }}% success rate</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-gray-500 text-center py-8">No data available</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Match Score Distribution -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Match Score Distribution</h2>
+        <canvas id="matchScoreChart" height="250"></canvas>
+    </div>
+</div>
+
+<!-- Skills Gap Analysis -->
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-lg font-semibold text-gray-900">Skills Gap Analysis</h2>
+        <span class="text-sm text-gray-600">Top skills in jobs you're interested in</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% if skills_gap %}
+            {% for skill in skills_gap %}
+            <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900">{{ skill.name }}</h3>
+                    <span class="{% if skill.has_skill %}text-green-600{% else %}text-red-600{% endif %}">
+                        <i class="fas {% if skill.has_skill %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                    </span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Required in {{ skill.frequency }}% of jobs</p>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="{% if skill.has_skill %}bg-green-500{% else %}bg-red-500{% endif %} h-2 rounded-full" 
+                        style="width: {{ skill.frequency }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 col-span-3 text-center py-8">No skills gap data available</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Insights & Recommendations -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Key Insights -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Key Insights
+        </h2>
+        <div class="space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="bg-green-100 rounded-full p-2 mt-1">
+                    <i class="fas fa-arrow-up text-green-600 text-sm"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Best performing day: Tuesday</p>
+                    <p class="text-sm text-gray-600">Applications sent on Tuesdays have 15% higher response rate</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="bg-blue-100 rounded-full p-2 mt-1">
+                    <i class="fas fa-star text-blue-600 text-sm"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Best source: LinkedIn</p>
+                    <p class="text-sm text-gray-600">LinkedIn jobs have resulted in 3 interviews</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="bg-purple-100 rounded-full p-2 mt-1">
+                    <i class="fas fa-clock text-purple-600 text-sm"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Average response time: 5 days</p>
+                    <p class="text-sm text-gray-600">Most responses come within a week of application</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+            <i class="fas fa-rocket text-blue-500 mr-2"></i> Recommendations
+        </h2>
+        <div class="space-y-4">
+            <div class="border-l-4 border-blue-500 pl-4">
+                <p class="font-medium text-gray-900 mb-1">Focus on Remote Jobs</p>
+                <p class="text-sm text-gray-600">Remote positions have shown 20% higher match scores for your profile</p>
+            </div>
+            <div class="border-l-4 border-green-500 pl-4">
+                <p class="font-medium text-gray-900 mb-1">Improve React Skills</p>
+                <p class="text-sm text-gray-600">React appears in 65% of your high-match jobs but isn't in your profile</p>
+            </div>
+            <div class="border-l-4 border-purple-500 pl-4">
+                <p class="font-medium text-gray-900 mb-1">Apply Earlier</p>
+                <p class="text-sm text-gray-600">Jobs applied within 24 hours of posting have 30% better success rate</p>
+            </div>
+            <div class="border-l-4 border-yellow-500 pl-4">
+                <p class="font-medium text-gray-900 mb-1">Follow Up Reminder</p>
+                <p class="text-sm text-gray-600">You have 3 applications without follow-up for over 2 weeks</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Application Timeline Chart
+    const timelineCtx = document.getElementById('applicationTimelineChart');
+    if (timelineCtx) {
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Applications Sent',
+                    data: [5, 8, 6, 10, 7, 3, 2],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Responses',
+                    data: [2, 3, 2, 4, 3, 1, 1],
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+
+    // Success Funnel Chart
+    const funnelCtx = document.getElementById('successFunnelChart');
+    if (funnelCtx) {
+        new Chart(funnelCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Interested', 'Applied', 'Interview', 'Offer'],
+                datasets: [{
+                    label: 'Applications',
+                    data: [45, 32, 8, 2],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(34, 197, 94, 0.8)',
+                        'rgba(168, 85, 247, 0.8)',
+                        'rgba(234, 179, 8, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Match Score Distribution Chart
+    const matchCtx = document.getElementById('matchScoreChart');
+    if (matchCtx) {
+        new Chart(matchCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High (80-100%)', 'Medium (60-79%)', 'Low (40-59%)'],
+                datasets: [{
+                    data: [15, 25, 10],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.8)',
+                        'rgba(234, 179, 8, 0.8)',
+                        'rgba(156, 163, 175, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
